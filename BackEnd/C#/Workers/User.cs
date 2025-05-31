@@ -4,13 +4,17 @@ namespace ServerSide
     {
         Client client;
         string name = "";
-        public event Action<string> OnSentMessage;
+        public event Action<User,string> OnSentMessage;
         public User(Client client)
         {
             this.client = client;
             SendMessage("Enter your name please!\n");
             client.OnMessageWritten += HandleInput;
             client.OnDisconect += OnDisconect;
+        }
+        public string Name
+        {
+            get { return name; }
         }
         void HandleInput(string msg)
         {
@@ -19,7 +23,7 @@ namespace ServerSide
                 name = msg;
                 SendMessage("Welcome: " + name + "\n");
             }
-            if (msg == "")
+            else if (msg == "")
             {
                 // nothing
             }
@@ -27,7 +31,7 @@ namespace ServerSide
             {
 
                 System.Console.WriteLine("Input by " + name + "\n");
-                OnSentMessage?.Invoke(msg);
+                OnSentMessage?.Invoke(this,msg);
             }
         }
         public void SendMessage(string msg)
@@ -38,6 +42,6 @@ namespace ServerSide
         {
             client.OnMessageWritten -= HandleInput;
             client.OnDisconect -= OnDisconect;
-        } 
-    }   
+        }
+    }
 }
