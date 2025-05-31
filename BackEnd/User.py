@@ -24,7 +24,7 @@ class User(threading.Thread):
                     print(f"{self.addr} disconnected")
                     break
                 # Echo back the received data
-                self.conn.sendall(data)
+                self.send(data)
         except Exception as e:
             print(f"Error with {self.addr}: {e}")
         finally:
