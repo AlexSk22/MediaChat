@@ -10,7 +10,7 @@ namespace ServerSide
         private static int port = 5050;
         private static IPAddress localAddr = IPAddress.Parse("127.0.0.1");
 
-        List<User> users;
+        List<Client> users;
 
         public Server()
         {
@@ -20,16 +20,17 @@ namespace ServerSide
 
             users = new();
         }
+        void removeUser(Client user)
+        {
+            users.Remove(user);
+        }
         public override void RunThread()
         {
             while (true)
             {
-                TcpClient client = myListener.AcceptTcpClient();
-                NetworkStream stream = client.GetStream();
-
-                stream.Write(Encoding.UTF8.GetBytes("Hi!\n"));
-
-                client.Close();
+                Client user = new(myListener.AcceptTcpClient());
+                user.Start();
+                users.Add(user);
             }
         }
     }
