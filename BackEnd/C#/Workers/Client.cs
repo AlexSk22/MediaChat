@@ -31,16 +31,19 @@ namespace ServerSide
                     Disconect("No connection");
                     break;
                 }
-                string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                string message = Encoding.UTF8.GetString(buffer, 0, bytesRead).Trim();
 
-                if (message.Trim() == "exit")
+                if (message== "exit")
                 {
                     Disconect("User's will");
                     break;
                 }
 
-                OnMessageWritten?.Invoke(message.Trim());
-                Console.WriteLine("Received: " + message);
+                OnMessageWritten?.Invoke(message);
+                if (message != "")
+                {
+                    Console.WriteLine("Received: " + message);
+                }
             }
         }
 
