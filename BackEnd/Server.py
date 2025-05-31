@@ -1,22 +1,25 @@
-import sys
 import socket
-import threading
+import User
 
 users = []
 
 ## change if needed but lets assume this is port for communication user-server
 PORT = 12345
 HOST = socket.gethostname()
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.bind((HOST, PORT))
-    s.listen()
-    conn, addr = s.accept()
-    with conn:
-        print(f"Connected by {addr}")
+
+def main():
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind((HOST, PORT))
+        s.listen(5)
+        print(f"Server listening on {HOST}:{PORT}")
+
         while True:
-            data = conn.recv(1024)
-            if not data:
-                break
-            conn.sendall(data)
+            conn, addr = s.accept()
+            user = User.User(conn, addr)
+            for i in users:
+                i.send("someone connected")
+            users.append(user)
+            user.start()
 
-
+if __name__ == "__main__":
+    main()
