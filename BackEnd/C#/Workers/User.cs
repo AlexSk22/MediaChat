@@ -1,47 +1,37 @@
-using System.Net.Sockets;
-using System.Text;
-
 namespace ServerSide
 {
-    public class Client : BaseThread
+    public class User
     {
-        TcpClient client;
-        public Client(TcpClient client)
+        Client client;
+        string name = null;
+        public event Action<string> OnSentMessage;
+        public User(Client client)
         {
             this.client = client;
+            SendMessage("Give your name please!");
+            client.OnMessageWritten += HandleInput;
+            client.OnDisconect += OnDisconect;
         }
-        public override async void RunThread()
+        void HandleInput(string msg)
         {
-            NetworkStream stream = client.GetStream();
-            byte[] buffer = new byte[1024];
-            while (true)
+            if (name == null)
             {
-
-                int bytesRead;
-                bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
-                if (bytesRead == 0)
-                {
-                    System.Console.WriteLine("Client disconected, no connection");
-                    break;
-                }
-                string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                Console.WriteLine("Received: " + message);
-
-                if (message.Trim() == "exit")
-                {
-                    System.Console.WriteLine("Client disconected");
-                    stream.Write(Encoding.UTF8.GetBytes("bye!\n"));
-                    client.Close();
-                    break;
-                }
-
-                stream.Write(Encoding.UTF8.GetBytes("hi!\n"));
+                name = msg;
+                SendMessage("Welcome: " + name);
+            }
+            else
+            {
+                OnSentMessage?.Invoke(msg);
             }
         }
-
-        public void Disconect()
+        public void SendMessage(string msg)
         {
-
+            client.sendMessage(msg);
         }
-    }
+        void OnDisconect()
+        {
+            client.OnMessageWritten -= HandleInput;
+            client.OnDisconect -= OnDisconect;
+        } 
+    }   
 }

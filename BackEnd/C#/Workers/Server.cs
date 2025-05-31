@@ -1,17 +1,16 @@
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 
 namespace ServerSide
 {
     public class Server : BaseThread
     {
         private static TcpListener myListener;
-        private static int port = 5050;
+        private static int port = 5050; // change please :/
         private static IPAddress localAddr = IPAddress.Parse("127.0.0.1");
 
         List<Client> users;
-
+        List<Room> rooms;
         public Server()
         {
             myListener = new TcpListener(localAddr, port);
