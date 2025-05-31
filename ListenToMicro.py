@@ -1,9 +1,9 @@
 import pyaudio
 
-CHUNK = 512
+CHUNK = 1024 
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
-RATE = 48000
+RATE = 41100 
 RECORD_SECONDS = 5
 
 p = pyaudio.PyAudio()

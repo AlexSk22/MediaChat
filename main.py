@@ -7,7 +7,6 @@ print(socket.gethostname())
 serversocket.bind((socket.gethostname(),port))
 serversocket.listen(5)
 
-
 while True:
     (clientsocket,addres) = serversocket.accept()
     print("Got connection from ", addres)
