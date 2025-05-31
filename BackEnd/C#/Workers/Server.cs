@@ -6,7 +6,7 @@ namespace ServerSide
     public class Server : BaseThread
     {
         private TcpListener myListener;
-        private static int port = 5050; // change please :/
+        private static int port = FreeTcpPort(); // change please :/
         private static IPAddress localAddr = IPAddress.Parse("127.0.0.1");
 
         List<User> users;
@@ -19,7 +19,9 @@ namespace ServerSide
 
             users = new();
             rooms = new();
-            rooms.Add(new Room("test"));
+            rooms.Add(new Room("test", FreeTcpPort()));
+            rooms.Add(new Room("test", FreeTcpPort()));
+            rooms.Add(new Room("test",FreeTcpPort()));
         }
         void removeUser(User user)
         {
@@ -37,10 +39,19 @@ namespace ServerSide
                 System.Console.WriteLine("New user!");
             }
         }
-
-        // API, return rooms
-        public void getRooms()
+        static int FreeTcpPort()
         {
+            TcpListener l = new TcpListener(IPAddress.Loopback, 0);
+            l.Start();
+            int port = ((IPEndPoint)l.LocalEndpoint).Port;
+            l.Stop();
+            return port;
+        }
+        // API, return rooms
+        // return JSON
+        public List<Room> GetRooms()
+        {
+            return rooms;
         }
     }
 }

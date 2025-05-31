@@ -3,14 +3,15 @@ namespace ServerSide
     public class Room
     {
         List<User> users;
-        string name;
-
-        public Room(string name)
+        public string Name { get; private set; }
+        public int Port { get; private set; }
+        public Room(string name,int port)
         {
-            this.name = name;
+            this.Name = name;
+            this.Port = port;
             users = new();
         }
-
+        
         public void AddUser(User user)
         {
             users.Add(user);
@@ -21,15 +22,15 @@ namespace ServerSide
             users.Remove(user);
             user.OnSentMessage -= BroadCast;
         }
-        public void BroadCast(User user,string msg)
+        public void BroadCast(User user, string msg)
         {
             foreach (var item in users)
             {
                 if (item != user)
                 {
-                    item.SendMessage($"[{name}] {user.Name} : {msg}");
+                    item.SendMessage($"[{Name}] {user.Name} : {msg}");
                 }
             }
         }
-    }   
+    }
 }
