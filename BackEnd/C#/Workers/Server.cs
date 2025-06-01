@@ -3,40 +3,22 @@ using System.Net.Sockets;
 
 namespace ServerSide
 {
-    public class Server : BaseThread
+    public class Server 
     {
         private TcpListener myListener;
-        private static int port = FreeTcpPort(); // change please :/
-        private static IPAddress localAddr = IPAddress.Parse("127.0.0.1");
+        private static int port = FreeTcpPort();
 
-        List<User> users;
         List<Room> rooms;
         public Server()
         {
-            myListener = new TcpListener(localAddr, port);
-            myListener.Start();
-            Console.WriteLine($"Web Server Running on {localAddr.ToString()} on port {port}... Press ^C to Stop...");
-
-            users = new();
             rooms = new();
-            rooms.Add(new Room("test", FreeTcpPort()));
-            rooms.Add(new Room("test", FreeTcpPort()));
-            rooms.Add(new Room("test",FreeTcpPort()));
-        }
-        void removeUser(User user)
-        {
-            users.Remove(user);
-        }
-        public override void RunThread()
-        {
-            while (true)
+            rooms.Add(new Room("Hi room", FreeTcpPort(), FreeTcpPort()));
+            rooms.Add(new Room("Meeting room", FreeTcpPort(), FreeTcpPort()));
+            rooms.Add(new Room("Onboard room", FreeTcpPort(), FreeTcpPort()));
+
+            foreach (var item in rooms)
             {
-                Client client = new(myListener.AcceptTcpClient());
-                client.Start();
-                User user = new User(client);
-                users.Add(user);
-                rooms[0].AddUser(user);
-                System.Console.WriteLine("New user!");
+                item.Start(); 
             }
         }
         static int FreeTcpPort()

@@ -20,7 +20,7 @@ class User(threading.Thread):
             print(f"Error with {self.addr}: {e}")
 
     def close(self):
-        self.close.close()
+        self.conn.close()
 
     def run(self):
         print(f"Connected by {self.addr}")

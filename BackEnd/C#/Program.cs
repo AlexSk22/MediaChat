@@ -8,7 +8,6 @@ public class Program
         System.Console.WriteLine("Starting...");
 
         Server server = new();
-        server.Start();
 
         var builder = WebApplication.CreateBuilder(args);
         var app = builder.Build();

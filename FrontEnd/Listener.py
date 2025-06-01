@@ -13,6 +13,8 @@ class Listener(threading.Thread):
             if not data:
                 # Connection closed
                 print("Connection closed by peer")
+                self.running = False
+                exit()
                 break
             if data.strip() != b"":
-                print(f"Received {data!r}")
+                print(data.decode().strip())

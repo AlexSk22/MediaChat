@@ -38,6 +38,10 @@ namespace ServerSide
         {
             client.sendMessage(msg);
         }
+        public void SendVoice(string msg)
+        {
+            client.sendMessage(msg);
+        }
         void OnDisconect()
         {
             client.OnMessageWritten -= HandleInput;

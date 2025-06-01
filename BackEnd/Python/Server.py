@@ -24,7 +24,7 @@ class Server(threading.Thread):
         while True:
             conn, addr = self.serversocket.accept()
             user = User.User(conn, addr)
-            
+             
             for i in self.users:
                 i.send("someone connected")
             self.users.append(user)
