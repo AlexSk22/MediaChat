@@ -11,7 +11,7 @@ class AudioSocket(threading.Thread):
         self.input_device_index = input_device_index
         self.output_device_index = output_device_index
         
-        self.CHUNK = 1024
+        self.CHUNK = 10240
         self.FORMAT = pyaudio.paInt16
         self.CHANNELS = 1
         self.RATE = 44100
@@ -21,7 +21,8 @@ class AudioSocket(threading.Thread):
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect((self.Host, self.Port))
-            print("AudioSocket init: ", self.Host, self.Port)
+
+            print("AudioSocket init:", self.Host, self.Port)
             print("AudioSocket started")
 
             p = pyaudio.PyAudio()
@@ -35,13 +36,11 @@ class AudioSocket(threading.Thread):
                                    frames_per_buffer=self.CHUNK)
 
             while self.running:
-                data = input_stream.read(self.CHUNK, exception_on_overflow=False)
+                # Read audio input from mic
+                data = input_stream.read(self.CHUNK)
                 s.sendall(data)
-                received = s.recv(self.CHUNK)
-                if received:
-                    output_stream.write(received, exception_on_underflow=False)
-        except Exception as e:
-            print(f"Error: {e}")
+                data = s.recv(self.CHUNK)
+                output_stream.write(data)
         finally:
             self.running = False
             try:
@@ -49,19 +48,8 @@ class AudioSocket(threading.Thread):
                 input_stream.close()
                 output_stream.stop_stream()
                 output_stream.close()
-            except:
+                p.terminate()
+            except Exception:
                 pass
             s.close()
-
-# Then in main
-if __name__ == "__main__":
-    host = "localhost"
-    port = 45215 
-    pyaudio.PyAudio()
-    # print devices, ask user, etc.
-
-    input_device_index = int(input("Input device index: "))
-    output_device_index = int(input("Output device index: "))
-
-    audio_socket = AudioSocket(host, port, input_device_index, output_device_index)
-    audio_socket.start()
+            print("AudioSocket stopped")

@@ -1,5 +1,6 @@
 import requests
 import json
+import threading
 
 import TextSocket
 import AudioSocket
@@ -53,11 +54,12 @@ def main():
     
     print(f"Voice port: {VoicePORT}, Text port: {TextPort}") 
 
+    args1 = [
+        HOST,
+        TextPort
+    ]
     StartAudioSocket(HOST=HOST,VoicePORT=VoicePORT,output_device_index=output_device_index,input_device_index=input_device_index)
-    StartTextSocket(HOST,TextPort)
-    
-    
-
+    #StartTextSocket(HOST,TextPort)
     
 if __name__ == "__main__":
     main()

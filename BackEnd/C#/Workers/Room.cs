@@ -8,7 +8,6 @@ namespace ServerSide
         List<User> users;
         private VoiceChannel voiceChannel;
         private TextChannel textChannel;
-
         private static IPAddress localAddr = IPAddress.Parse("127.0.0.1");
         public string Name { get; private set; }
         public int VoicePort { get; private set; }

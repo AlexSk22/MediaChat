@@ -30,8 +30,7 @@ namespace ServerSide
         {
             foreach (var item in users)
             {
-                    System.Console.WriteLine("sending to" + item.Name);
-                    item.SendVoice(msg);
+                item.SendVoice(msg);
             }
         }
         public override void RunThread()

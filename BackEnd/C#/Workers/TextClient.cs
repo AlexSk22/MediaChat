@@ -12,7 +12,7 @@ namespace ServerSide
         public override async void RunThread()
         {
             NetworkStream stream = client.GetStream();
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[10240];
             while (true)
             {
 

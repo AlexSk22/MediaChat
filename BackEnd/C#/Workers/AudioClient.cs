@@ -1,10 +1,10 @@
 using System.Net.Sockets;
-using System.Text;
 
 namespace ServerSide
 {
-    public class AudioClient : Client 
+    public class AudioClient : Client
     {
+        int BUFFERSIZE = 10240;
         public AudioClient(TcpClient client) : base(client)
         {
 
@@ -12,21 +12,23 @@ namespace ServerSide
         public override async void RunThread()
         {
             NetworkStream stream = client.GetStream();
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[BUFFERSIZE];
+
             while (true)
             {
-
-                int bytesRead;
-                bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
+                int bytesRead = await stream.ReadAsync(buffer, 0, BUFFERSIZE);
                 if (bytesRead == 0)
                 {
-                    Disconect("No connection");
+                    Disconect("Client disconnected");
                     break;
                 }
 
-                MessageWrittenBytes(buffer);
+                byte[] received = new byte[bytesRead];
+                Array.Copy(buffer, received, bytesRead);
+                MessageWrittenBytes(received);
             }
         }
+
 
     }
 }

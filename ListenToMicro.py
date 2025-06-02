@@ -42,14 +42,15 @@ OutputStream = p.open(format=FORMAT,
 #print("Done.")
 
 
-PORT = 42181
+PORT = 38413
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect(("localhost", PORT))
 
 while True:
     data =  InputStream.read(CHUNK,exception_on_overflow=False)
     s.sendall(data) 
-    data = s.recv(1024)
+    data = 0
+    data = s.recv(10240)
     if data:
         OutputStream.write(data, exception_on_underflow=False)
     else:
