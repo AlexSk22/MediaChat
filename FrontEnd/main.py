@@ -10,7 +10,7 @@ import Audio
 
 def StartAudioSocket(HOST,VoicePORT,output_device_index,input_device_index):
     print("Creating Audio Socket")
-    s = AudioSocket.AudioSocket(HOST=HOST,AudioPort=VoicePORT,output_device_index=output_device_index,input_device_index=input_device_index)
+    s = AudioSocket.AudioSocket(host=HOST,port=VoicePORT,output_device_index=output_device_index,input_device_index=input_device_index)
     s.start()
 
 def StartTextSocket(HOST,TextPort):
@@ -21,7 +21,8 @@ def StartTextSocket(HOST,TextPort):
 
 def main():
     print("Welcome to mediachat client")   
-    HOST = input("write host name: ") 
+    HOST = input("write host name: ").strip()
+
     APIPORT = input("write host api port (standart 5000): ")
   
     if not HOST:
@@ -52,8 +53,8 @@ def main():
     
     print(f"Voice port: {VoicePORT}, Text port: {TextPort}") 
 
+    StartAudioSocket(HOST=HOST,VoicePORT=VoicePORT,output_device_index=output_device_index,input_device_index=input_device_index)
     StartTextSocket(HOST,TextPort)
-    StartAudioSocket(HOST,VoicePORT,output_device_index,input_device_index)
     
     
 
