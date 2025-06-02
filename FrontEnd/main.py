@@ -59,7 +59,7 @@ def main():
         TextPort
     ]
     StartAudioSocket(HOST=HOST,VoicePORT=VoicePORT,output_device_index=output_device_index,input_device_index=input_device_index)
-    #StartTextSocket(HOST,TextPort)
+    StartTextSocket(HOST,TextPort)
     
 if __name__ == "__main__":
     main()
