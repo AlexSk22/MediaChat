@@ -1,12 +1,23 @@
 import requests
 import json
-import socket
 
-import Writer
-import Listener
+import TextSocket
+import AudioSocket
+import Audio
 # ask for server
 # ask for rooms
 # ask for name
+
+def StartAudioSocket(HOST,VoicePORT,output_device_index,input_device_index):
+    print("Creating Audio Socket")
+    s = AudioSocket.AudioSocket(HOST=HOST,AudioPort=VoicePORT,output_device_index=output_device_index,input_device_index=input_device_index)
+    s.start()
+
+def StartTextSocket(HOST,TextPort):
+    print("Creating Text Socket")
+    s = TextSocket.TextSocket(HOST=HOST,TextPort=TextPort)
+    s.start() 
+
 
 def main():
     print("Welcome to mediachat client")   
@@ -19,7 +30,7 @@ def main():
         APIPORT = 5000 
    
     try:
-        print("rooms")
+        print("Rooms")
         response = requests.get(f"http://{HOST}:{APIPORT}/rooms")
         response.raise_for_status()  # Raises HTTPError if the response was unsuccessful
         rooms = response.json()      # More efficient than using json.loads(response.text)
@@ -28,47 +39,23 @@ def main():
     except json.JSONDecodeError as e:
         print(f"JSON decode error: {e}")
     
-    print(json.dumps(rooms,indent=4))
     for index,i in enumerate(rooms):
-        print(f"{index}: RoomName {i["name"]}")
+        print(f"{index}:{i["name"]}")
     roomIndex = int(input("Choose your room please"))
+  
+    Audio.list_audio_devices()
+    input_device_index = int(input("\nEnter the device index number for INPUT (microphone): "))
+    output_device_index = int(input("Enter the device index number for OUTPUT (speaker): "))
    
     VoicePORT = rooms[roomIndex]["voicePort"]
     TextPort = rooms[roomIndex]["textPort"] 
     
     print(f"Voice port: {VoicePORT}, Text port: {TextPort}") 
 
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    try:
-        s.connect((HOST, TextPort))
-        print("Connected!")
-        
-        listener = Listener.Listener(s)
-        writer = Writer.Writer(s)
+    StartTextSocket(HOST,TextPort)
+    StartAudioSocket(HOST,VoicePORT,output_device_index,input_device_index)
     
-        listener.start()
-        writer.start()
-
-        try:
-            listener.start()
-            print("\nStreaming audio in real-time. Press Ctrl+C to stop.\n")
-            while True:
-                data = listener.read()
-                writer.sendMessage(data)
-        except KeyboardInterrupt:
-            print("\nStopping...")
-        finally:
-            listener.stop()
-
-        writer.join()                 # Wait for writer to finish
-        listener.running = False      # Signal listener to stop
-        s.shutdown(socket.SHUT_RDWR)  # Optional: shut down the connection
-        s.close()                     # Close the socket
-        listener.join()
-        
-    except Exception as e:
-        print(f"Connection failed: {e}")
-        s.close()    
+    
 
     
 if __name__ == "__main__":

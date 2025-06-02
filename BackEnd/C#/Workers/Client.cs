@@ -3,10 +3,11 @@ using System.Text;
 
 namespace ServerSide
 {
-    public class Client : BaseThread
+    abstract public class Client : BaseThread
     {
-        TcpClient client;
-        public event Action<string> OnMessageWritten;
+        protected TcpClient client;
+        public event Action<byte[]> OnMessageWrittenBytes;
+        public event Action<string> OnMessageWrittenString;
         public event Action OnDisconect;
         public Client(TcpClient client)
         {
@@ -15,43 +16,28 @@ namespace ServerSide
         public void sendMessage(string msg)
         {
             NetworkStream stream = client.GetStream();
-            stream.Write(Encoding.UTF8.GetBytes(msg));
+            byte[] bytes = Encoding.UTF8.GetBytes(msg);
+            stream.Write(bytes, 0, bytes.Length);
         }
-        public override async void RunThread()
+        public void sendMessage(byte[] msg)
         {
             NetworkStream stream = client.GetStream();
-            byte[] buffer = new byte[1024];
-            while (true)
-            {
-
-                int bytesRead;
-                bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
-                if (bytesRead == 0)
-                {
-                    Disconect("No connection");
-                    break;
-                }
-                string message = Encoding.UTF8.GetString(buffer, 0, bytesRead).Trim();
-
-                if (message== "exit")
-                {
-                    Disconect("User's will");
-                    break;
-                }
-
-                OnMessageWritten?.Invoke(message);
-                if (message != "")
-                {
-                    Console.WriteLine("Received: " + message);
-                }
-            }
+            stream.Write(msg, 0, msg.Length);
         }
 
-        void Disconect(string reason)
+        protected void Disconect(string reason)
         {
             System.Console.WriteLine("Client disconected: " + reason);
             client.Close();
             OnDisconect?.Invoke();
+        }
+        protected void MessageWrittenBytes(byte[] msg)
+        {
+            OnMessageWrittenBytes?.Invoke(msg);
+        }
+        protected void MessageWrittenString(string msg)
+        {
+            OnMessageWrittenString?.Invoke(msg);
         }
     }
 }

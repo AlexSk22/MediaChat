@@ -3,11 +3,8 @@ using System.Net.Sockets;
 
 namespace ServerSide
 {
-    public class Server 
+    public class Server
     {
-        private TcpListener myListener;
-        private static int port = FreeTcpPort();
-
         List<Room> rooms;
         public Server()
         {
@@ -16,19 +13,17 @@ namespace ServerSide
             rooms.Add(new Room("Meeting room", FreeTcpPort(), FreeTcpPort()));
             rooms.Add(new Room("Onboard room", FreeTcpPort(), FreeTcpPort()));
 
-            foreach (var item in rooms)
-            {
-                item.Start(); 
-            }
         }
-        static int FreeTcpPort()
+        public static int FreeTcpPort()
         {
-            TcpListener l = new TcpListener(IPAddress.Loopback, 0);
-            l.Start();
-            int port = ((IPEndPoint)l.LocalEndpoint).Port;
-            l.Stop();
+            var listener = new TcpListener(IPAddress.Loopback, 0);
+            listener.Start();
+            int port = ((IPEndPoint)listener.LocalEndpoint).Port;
+            listener.Stop();
             return port;
         }
+
+
         // API, return rooms
         // return JSON
         public List<Room> GetRooms()

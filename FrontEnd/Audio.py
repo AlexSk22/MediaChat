@@ -17,10 +17,12 @@ class AudioListener:
                                   rate=self.rate,
                                   input=True,
                                   frames_per_buffer=self.chunk,
-                                  input_device_index=self.device_index)
+                                  
+                                  )
 
     def read(self):
-        return self.stream.read(self.chunk, exception_on_overflow=False)
+        data =  self.stream.read(self.chunk, exception_on_overflow=False)
+        return data
 
     def stop(self):
         if self.stream is not None:

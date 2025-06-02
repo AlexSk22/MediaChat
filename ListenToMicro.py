@@ -1,4 +1,5 @@
 import pyaudio
+import socket
 
 CHUNK = 1024 
 FORMAT = pyaudio.paInt16
@@ -13,8 +14,8 @@ print("Available audio devices:\n")
 for i in range(p.get_device_count()):
     info = p.get_device_info_by_index(i)
     print(f"[{i}] {info['name']} | Input Channels: {info['maxInputChannels']} | Output Channels: {info['maxOutputChannels']}")
-
 # Step 2: Ask user to select input and output device
+
 input_device_index = int(input("\nEnter the device index number for INPUT (microphone): "))
 output_device_index = int(input("Enter the device index number for OUTPUT (speaker): "))
 
@@ -40,9 +41,19 @@ OutputStream = p.open(format=FORMAT,
 #    OutputStream.write(data, exception_on_underflow=False)
 #print("Done.")
 
+
+PORT = 42181
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect(("localhost", PORT))
+
 while True:
-    data = InputStream.read(CHUNK, exception_on_overflow=False)
-    OutputStream.write(data, exception_on_underflow=False)
+    data =  InputStream.read(CHUNK,exception_on_overflow=False)
+    s.sendall(data) 
+    data = s.recv(1024)
+    if data:
+        OutputStream.write(data, exception_on_underflow=False)
+    else:
+        print("No data")
 # Step 5: Cleanup
 InputStream.stop_stream()
 InputStream.close()
